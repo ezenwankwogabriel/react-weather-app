@@ -1,41 +1,53 @@
-import React, { useContext, useState } from 'react';
-import { GlobalStoreContext } from './Store';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+class Header extends Component {
 
-function Header(props) {
+  state = {
+    searchText: '',
+  }
 
-  const [globalStore] = useContext(GlobalStoreContext);
-  const [searchText, setSearchText] = useState('');
-
-  const handleInputChange = event => {
-    setSearchText(event.target.value);
+  handleInputChange = event => {
+    this.setState({searchText: event.target.value});
   };
 
-  const handleFormSubmit = event => {
+  handleFormSubmit = event => {
     event.preventDefault();
-    props.handleAddressSearch(searchText);
-    setSearchText('');
+    this.props.handleAddressSearch(this.searchText);
+    this.setState({searchText: ''});
   };
 
-  return (
-    <header>
-      <div>Latitude: {globalStore.latitude.toFixed(4)}</div>
-      <div>Longitude: {globalStore.longitude.toFixed(4)}</div>
-      <div>Address: {globalStore.address}</div>
-      <div>
-        <form onSubmit={handleFormSubmit}>
-          <input
-            type='text'
-            id='city_search'
-            placeholder={globalStore.city}
-            value={searchText}
-            onChange={handleInputChange}
-          />
-          <img src='./images/icons/search.svg' alt='search icon' />
-          <button type='submit' />
-        </form>
-      </div>
-    </header>
-  );
+  render() {
+    return (
+      <header>
+        <div>Latitude: {this.props.latitude.toFixed(4)}</div>
+        <div>Longitude: {this.props.longitude.toFixed(4)}</div>
+        <div>Address: {this.props.address}</div>
+        <div>
+          <form onSubmit={this.handleFormSubmit}>
+            <input
+              type='text'
+              id='city_search'
+              placeholder={this.props.city}
+              value={this.searchText}
+              onChange={this.handleInputChange}
+            />
+            <img src='./images/icons/search.svg' alt='search icon' />
+            <button type='submit' />
+          </form>
+        </div>
+      </header>
+    );
+  }
 }
 
-export default Header;
+const mapStateToProps = (state) => {
+  return {
+    latitude: state.latitude,
+    longitude: state.longitude,
+    address: state.address,
+    city: state.city
+  }
+}
+
+
+export default connect(mapStateToProps)(Header);
